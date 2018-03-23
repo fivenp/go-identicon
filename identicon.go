@@ -1,4 +1,4 @@
-package qidenticon
+package identicon
 
 import (
 	"crypto/sha512"
