@@ -63,7 +63,7 @@ var DefaultColorPalette = []Color{
 	{Name:"whiteIntense", Code: "#f3f5f7"},
 	{Name:"black", Code: "#000000"},
 }
-var DefaultBackgroundColor = "#333333"
+var DefaultBackgroundColor = "#2d3e50"
 
 type Settings struct {
 	// TwoColor specifies if the identicon should be
@@ -73,21 +73,22 @@ type Settings struct {
 	// Alpha specifies the transparency of the generated identicon.
 	Alpha uint8
 
-	BackgroundColor string
 	TransparentBackground bool
 	ColorPalette []Color
+	BackgroundColors []string
 }
 
 // DefaultSettings returns a Settings object with the recommended settings.
 func DefaultSettings() *Settings {
 	palette := DefaultColorPalette
-	backgroundColor := DefaultBackgroundColor
+	// backgroundColors := []string{DefaultBackgroundColor}
+	backgroundColors := []string{"#f3f5f7","#ecf0f1","#2d3e50","#393939"}
 	return &Settings{
 		TwoColor: true,
 		Alpha:    255,
-		BackgroundColor: backgroundColor,
-		TransparentBackground: false,
 		ColorPalette: palette,
+		TransparentBackground: false,
+		BackgroundColors: backgroundColors,
 	}
 }
 
@@ -118,10 +119,10 @@ func Render(code uint64, totalSize int, settings *Settings) image.Image {
 	randomSecondColor := settings.ColorPalette[rand.Intn(len(settings.ColorPalette))]
 	secondRed, secondGreen, secondBlue := hex.Convert(randomSecondColor.Code)
 
-	foreColor := color.RGBA{R: uint8(red) << 3, G: uint8(green) << 3, B: uint8(blue) << 3, A: settings.Alpha}
+	foreColor := color.RGBA{R: uint8(red), G: uint8(green), B: uint8(blue), A: settings.Alpha}
 	var secondColor color.RGBA
 	if settings.TwoColor {
-		secondColor = color.RGBA{R: uint8(secondRed) << 3, G: uint8(secondGreen) << 3, B: uint8(secondBlue) << 3, A: settings.Alpha}
+		secondColor = color.RGBA{R: uint8(secondRed), G: uint8(secondGreen), B: uint8(secondBlue), A: settings.Alpha}
 	} else {
 		secondColor = foreColor
 	}
@@ -135,9 +136,10 @@ func Render(code uint64, totalSize int, settings *Settings) image.Image {
 	patchSize := float64(totalSize) / 3
 
 	if !settings.TransparentBackground {
-		bgRed, bgGreen, bgBlue := hex.Convert(settings.BackgroundColor)
+		randomBackgroundColor := settings.BackgroundColors[rand.Intn(len(settings.BackgroundColors))]
+		bgRed, bgGreen, bgBlue := hex.Convert(randomBackgroundColor)
 		image.DrawRectangle(0, 0, float64(totalSize), float64(totalSize))
-		image.SetRGB(float64(bgRed), float64(bgGreen), float64(bgBlue))
+		image.SetRGB255(bgRed, bgGreen, bgBlue)
 		image.Fill()
 	}
 
