@@ -6,7 +6,10 @@ import (
 	"image"
 	"image/color"
 	"math"
+	"math/rand"
+	"time"
 
+	hex "github.com/dlion/hex2rgb"
 	"github.com/fogleman/gg"
 )
 
@@ -71,6 +74,7 @@ type Settings struct {
 	Alpha uint8
 
 	BackgroundColor string
+	TransparentBackground bool
 	ColorPalette []Color
 }
 
@@ -82,6 +86,7 @@ func DefaultSettings() *Settings {
 		TwoColor: true,
 		Alpha:    255,
 		BackgroundColor: backgroundColor,
+		TransparentBackground: false,
 		ColorPalette: palette,
 	}
 }
@@ -91,23 +96,28 @@ func DefaultSettings() *Settings {
 // totalSize specifies the total size in pixels. It is recommended that
 // this is divisible by 3.
 func Render(code uint64, totalSize int, settings *Settings) image.Image {
-	penWidth := 0
+	rand.Seed(time.Now().Unix())
+
+	penWidth := 1
 	middleType := int(code & 0x03)
 	middleInvert := code>>2&0x01 == 1
+	middleInvert = false
 	cornerType := int(code >> 3 & 0x0f)
 	cornerInvert := code>>7&0x01 == 1
+	cornerInvert = false
 	cornerTurn := int(code >> 8 & 0x03)
 	sideType := int(code >> 10 & 0x0f)
 	sideInvert := code>>14&0x01 == 1
+	sideInvert = false
 	sideTurn := int(code >> 15 & 0x03)
-	blue := code >> 17 & 0x1f
-	green := code >> 22 & 0x1f
-	red := code >> 27 & 0x1f
-	secondRed := code >> 32 & 0x1f
-	secondGreen := code >> 37 & 0x1f
-	secondBlue := code >> 42 & 0x1f
 	swapCross := code>>47&0x01 == 1
 	middleType = middlePatchSet[middleType]
+
+	randomFirstColor := settings.ColorPalette[rand.Intn(len(settings.ColorPalette))]
+	red, green, blue := hex.Convert(randomFirstColor.Code)
+	randomSecondColor := settings.ColorPalette[rand.Intn(len(settings.ColorPalette))]
+	secondRed, secondGreen, secondBlue := hex.Convert(randomSecondColor.Code)
+
 	foreColor := color.RGBA{R: uint8(red) << 3, G: uint8(green) << 3, B: uint8(blue) << 3, A: settings.Alpha}
 	var secondColor color.RGBA
 	if settings.TwoColor {
@@ -123,6 +133,14 @@ func Render(code uint64, totalSize int, settings *Settings) image.Image {
 	}
 	image := gg.NewContext(totalSize, totalSize)
 	patchSize := float64(totalSize) / 3
+
+	if !settings.TransparentBackground {
+		bgRed, bgGreen, bgBlue := hex.Convert(settings.BackgroundColor)
+		image.DrawRectangle(0, 0, float64(totalSize), float64(totalSize))
+		image.SetRGB(float64(bgRed), float64(bgGreen), float64(bgBlue))
+		image.Fill()
+	}
+
 	drawPatch(gg.Point{X: 1, Y: 1}, 0, middleInvert, middleType, image, patchSize, middleColor, penWidth)
 	for i, p := range []gg.Point{{X: 1, Y: 0}, {X: 2, Y: 1}, {X: 1, Y: 2}, {X: 0, Y: 1}} {
 		drawPatch(p, sideTurn+1+i, sideInvert, sideType, image, patchSize, foreColor, penWidth)
