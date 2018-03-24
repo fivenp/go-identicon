@@ -16,6 +16,52 @@ func Code(str string) uint64 {
 	return binary.BigEndian.Uint64(buf[56:])
 }
 
+type Color struct {
+	Name string
+    Code string
+}
+
+var DefaultColorPalette = []Color{
+	{Name:"lightBlack", Code:"#2c2c2c"},
+	{Name:"lightBlackIntense", Code:"#232323"},
+	{Name:"turquoise", Code:"#00bf93"},
+	{Name:"turquoiseIntense", Code:"#16a086"},
+	{Name:"mint", Code:"#2dcc70"},
+	{Name:"mintIntense", Code:"#27ae61"},
+	{Name:"green", Code:"#42e453"},
+	{Name:"greenIntense", Code:"#24c333"},
+	{Name:"yellow", Code:"#ffff25"},
+	{Name:"yellowIntense", Code:"#d9d921"},
+	{Name:"yellowOrange", Code:"#f1c40f"},
+	{Name:"yellowOrangeIntense", Code:"#f39c11"},
+	{Name:"brown", Code:"#e67f22"},
+	{Name:"brownIntense", Code:"#d25400"},
+	{Name:"orange", Code:"#ff944e"},
+	{Name:"orangeIntense", Code:"#ff5500"},
+	{Name:"red", Code:"#e84c3d"},
+	{Name:"redIntense", Code:"#c1392b"},
+	{Name:"blue", Code:"#3598db"},
+	{Name:"blueIntense", Code:"#297fb8"},
+	{Name:"darkBlue", Code:"#34495e"},
+	{Name:"darkBlueIntense", Code:"#2d3e50"},
+	{Name:"lightGrey", Code:"#ecf0f1"},
+	{Name:"lightGreyIntense", Code:"#bec3c7"},
+	{Name:"grey", Code:"#95a5a5"},
+	{Name:"greyIntense", Code:"#7e8c8d"},
+	{Name:"magenta", Code:"#ef3e96"},
+	{Name:"magentaIntense", Code:"#e52383"},
+	{Name:"violet", Code:"#df21b9"},
+	{Name:"violetIntense", Code:"#be127e"},
+	{Name:"purple", Code:"#9a59b5"},
+	{Name:"purpleIntense", Code:"#8d44ad"},
+	{Name:"lightBlue", Code:"#7dc2d2"},
+	{Name:"lightBlueIntense", Code:"#1cabbb"},
+	{Name:"white", Code: "#ffffff"},
+	{Name:"whiteIntense", Code: "#f3f5f7"},
+	{Name:"black", Code: "#000000"},
+}
+var DefaultBackgroundColor = "#333333"
+
 type Settings struct {
 	// TwoColor specifies if the identicon should be
 	// generated using one or two colors.
@@ -23,13 +69,20 @@ type Settings struct {
 
 	// Alpha specifies the transparency of the generated identicon.
 	Alpha uint8
+
+	BackgroundColor string
+	ColorPalette []Color
 }
 
 // DefaultSettings returns a Settings object with the recommended settings.
 func DefaultSettings() *Settings {
+	palette := DefaultColorPalette
+	backgroundColor := DefaultBackgroundColor
 	return &Settings{
 		TwoColor: true,
 		Alpha:    255,
+		BackgroundColor: backgroundColor,
+		ColorPalette: palette,
 	}
 }
 
