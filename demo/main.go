@@ -34,6 +34,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	code := identicon.Code(item)
 	size := 1024
 	settings := identicon.DefaultSettings()
+
+	//log.Printf("got settings '%s'\n", settings)
+
 	img := identicon.Render(code, size, settings)
 
 	log.Printf("creating identicon for '%s'\n", item)
@@ -57,7 +60,7 @@ func main() {
 	if p := os.Getenv("PORT"); p != "" {
 		port = ":" + p
 	}
-	log.Println("Listening on port", port)
+	log.Printf("Listening on http://localhost%s\n", port)
 
 	http.HandleFunc("/", handler)
 	log.Fatal(http.ListenAndServe(port, nil))
