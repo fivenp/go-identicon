@@ -1,12 +1,14 @@
-# qidenticon (from Bitmessage) ported to Go
+# Identicons in Golang
 
-
+A kinda customizeable identicon implementation based on Bitmessage qidenticon
 
 ## Sample icons
 
 ![Sample icons](sample.png)
 
 ## Example
+
+### Basic
 
 ```golang
 package main
@@ -15,7 +17,7 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/jakobvarmose/go-qidenticon"
+	"github.com/fivenp/go-identicon"
 )
 
 func main() {
@@ -34,3 +36,7 @@ func main() {
 	}
 }
 ```
+
+### Advanced
+
+Check the [demo](demo/) folder...
