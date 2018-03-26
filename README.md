@@ -21,10 +21,10 @@ import (
 )
 
 func main() {
-	code := qidenticon.Code("test")
+	code := identicon.Code("test")
 	size := 30
-	settings := qidenticon.DefaultSettings()
-	img := qidenticon.Render(code, size, settings)
+	settings := identicon.DefaultSettings()
+	img := identicon.Render(code, size, settings)
 	w, err := os.Create("test.png")
 	if err != nil {
 		panic(err)
